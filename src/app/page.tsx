@@ -1,29 +1,26 @@
 "use client";
 
-import React, { useRef } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { Float, Environment, ContactShadows, PresentationControls, Text } from '@react-three/drei';
-import * as THREE from 'three';
+import React from 'react';
+import { Canvas } from '@react-three/fiber';
+import { Float, Environment, ContactShadows, PresentationControls } from '@react-three/drei';
 import { useSession, signIn, signOut } from "next-auth/react";
 
 function MailIcon() {
-  const group = useRef<THREE.Group>(null);
-  
-  // A simple 3D representation of an envelope using primitive shapes
   return (
-    <group ref={group} dispose={null}>
+    <group dispose={null}>
+      {/* Envelope body */}
       <mesh castShadow receiveShadow>
         <boxGeometry args={[3, 2, 0.2]} />
         <meshStandardMaterial color="#ffffff" roughness={0.2} metalness={0.1} />
       </mesh>
-      {/* Top flap of the envelope */}
+      {/* Top flap */}
       <mesh position={[0, 0.5, 0.11]} rotation={[0, 0, Math.PI / 4]}>
         <boxGeometry args={[2.1, 2.1, 0.05]} />
         <meshStandardMaterial color="#e2e8f0" roughness={0.3} />
       </mesh>
-      {/* Seal / Accent */}
-      <mesh position={[0, 0, 0.15]}>
-        <cylinderGeometry args={[0.3, 0.3, 0.05, 32]} rotation={[Math.PI / 2, 0, 0]} />
+      {/* Seal - rotation moved to mesh, not geometry */}
+      <mesh position={[0, 0, 0.15]} rotation={[Math.PI / 2, 0, 0]}>
+        <cylinderGeometry args={[0.3, 0.3, 0.05, 32]} />
         <meshStandardMaterial color="#3b82f6" roughness={0.2} metalness={0.5} />
       </mesh>
     </group>
