@@ -22,15 +22,24 @@ function categorizeEmail(subject: string, snippet: string): { label: string; col
   return { label: 'Job Related 📧', color: 'bg-gray-100 text-gray-700' };
 }
 
-export async function GET() {
-  const session = await getServerSession(authOptions);
+export async function GET(request: Request) {
+  // Support both web (NextAuth session) and mobile (Bearer token)
+  let accessToken: string | null = null;
 
-  if (!session || !(session as any).accessToken) {
+  const authHeader = request.headers.get('Authorization');
+  if (authHeader?.startsWith('Bearer ')) {
+    accessToken = authHeader.slice(7);
+  } else {
+    const session = await getServerSession(authOptions);
+    accessToken = (session as any)?.accessToken ?? null;
+  }
+
+  if (!accessToken) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const auth = new google.auth.OAuth2();
-  auth.setCredentials({ access_token: (session as any).accessToken });
+  auth.setCredentials({ access_token: accessToken });
 
   const gmail = google.gmail({ version: 'v1', auth });
 
